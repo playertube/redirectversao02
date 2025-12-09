@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Preparando seu Download...</title>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+    }
+
+    body {
+        background: linear-gradient(135deg, #6a11cb, #2575fc);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 15px;
+        color: #fff;
+    }
+
+    .container {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(12px);
+        border-radius: 20px;
+        padding: 25px;
+        width: 100%;
+        max-width: 460px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        text-align: center;
+        animation: fadeIn 0.7s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    h2 {
+        margin-bottom: 20px;
+        font-weight: 600;
+        font-size: 22px;
+    }
+
+    #imagem {
+        width: 100%;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        margin-bottom: 25px;
+    }
+
+    .progress-box {
+        width: 100%;
+        background: rgba(255,255,255,0.25);
+        border-radius: 30px;
+        overflow: hidden;
+        height: 15px;
+        margin-bottom: 10px;
+    }
+
+    .progress-bar {
+        width: 0%;
+        height: 100%;
+        background: linear-gradient(90deg, #00ffae, #00c8ff);
+        transition: width 0.2s ease;
+    }
+
+    #status {
+        font-size: 14px;
+        margin-bottom: 10px;
+        opacity: 0.9;
+    }
+
+    #contador {
+        font-size: 16px;
+        font-weight: bold;
+        margin-top: 15px;
+        display: none;
+    }
+
+    /* Publicidade */
+    #ads {
+        margin-top: 25px;
+        padding: 12px;
+        background: rgba(255,255,255,0.2);
+        border-radius: 12px;
+        backdrop-filter: blur(8px);
+        font-size: 14px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    #ads h3 {
+        font-size: 16px;
+        margin-bottom: 8px;
+    }
+
+    /* Responsivo */
+    @media (max-width: 480px) {
+        h2 {
+            font-size: 20px;
+        }
+        #ads {
+            font-size: 13px;
+        }
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Preparando seu download...</h2>
+
+    <img id="imagem" src="" alt="Carregando imagem...">
+
+    <div class="progress-box">
+        <div class="progress-bar" id="progress"></div>
+    </div>
+
+    <p id="status">Carregando: 0%</p>
+
+    <p id="contador"></p>
+
+    <div id="ads">
+        <h3>Publicidade</h3>
+        <p>Espaço para seus anúncios, banners ou scripts.</p>
+    </div>
+</div>
+
+
+<script>
+    function getParametro(nome) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(nome);
+    }
+
+    const molde = getParametro("molde");
+
+    fetch("dados.json")
+        .then(res => res.json())
+        .then(json => {
+            if (!json[molde]) {
+                document.body.innerHTML = "<h2 style='color:white;text-align:center'>Molde não encontrado.</h2>";
+                return;
+            }
+
+            const dados = json[molde];
+            document.getElementById("imagem").src = dados.imagem;
+
+            let progresso = 0;
+            const barra = document.getElementById("progress");
+            const status = document.getElementById("status");
+            const contador = document.getElementById("contador");
+
+            const intervalo = setInterval(() => {
+                progresso += 3 + Math.random() * 8;
+
+                if (progresso >= 100) {
+                    progresso = 100;
+                    barra.style.width = progresso + "%";
+                    status.innerText = "Carregando: 100%";
+
+                    clearInterval(intervalo);
+
+                    // Mostra contagem regressiva
+                    let tempo = 5;
+                    contador.style.display = "block";
+                    contador.innerText = "Redirecionando em " + tempo + " segundos...";
+
+                    const count = setInterval(() => {
+                        tempo--;
+                        contador.innerText = "Redirecionando em " + tempo + " segundos...";
+
+                        if (tempo <= 0) {
+                            clearInterval(count);
+                            window.location.href = dados.link;
+                        }
+                    }, 1000);
+
+                } else {
+                    barra.style.width = progresso + "%";
+                    status.innerText = "Carregando: " + Math.floor(progresso) + "%";
+                }
+
+            }, 150);
+        })
+        .catch(err => {
+            document.body.innerHTML = "<h2 style='color:white;text-align:center'>Erro ao carregar JSON.</h2>";
+        });
+</script>
+
+</body>
+</html>
