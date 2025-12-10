@@ -139,7 +139,9 @@
 
     const molde = getParametro("molde");
 
-    fetch("dados.json")
+   //fetch("dados.json")
+   fetch("dados.json?v=" + Date.now(), { cache: "no-store" })
+
         .then(res => res.json())
         .then(json => {
             if (!json[molde]) {
